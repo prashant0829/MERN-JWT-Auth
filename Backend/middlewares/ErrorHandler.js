@@ -19,7 +19,6 @@ const errorLogStream = fs.createWriteStream(
 const errorHandler = (err, req, res, next) => {
   const status = err.status || 500;
   const message = err.message || "Internal Server Error!";
-  console.error(err.stack);
   errorLogStream.write(`${new Date().toISOString()} - ${err.stack}\n`);
   return res.status(status).json({
     success: false,

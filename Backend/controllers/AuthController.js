@@ -34,6 +34,7 @@ exports.login = async (req, res, next) => {
     );
 
     res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
+    res.cookie("accessToken", accessToken, { httpOnly: true, secure: true });
 
     res.status(200).json({
       user: { id: user._id, username: user.username },
@@ -52,6 +53,7 @@ exports.refreshToken = async (req, res, next) => {
   jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
     if (err) {
       res.clearCookie("refreshToken");
+      res.clearCookie("accessToken");
       return res.status(403).json({ error: "Invalid refresh token" });
     }
     const accessToken = generateToken(
@@ -65,5 +67,6 @@ exports.refreshToken = async (req, res, next) => {
 
 exports.logout = (req, res, next) => {
   res.clearCookie("refreshToken");
+  res.clearCookie("accessToken");
   res.status(200).json({ message: "Logged out successfully" });
 };

@@ -1,12 +1,12 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import api from "../utility/api";
 import { AuthContext } from "../components/AuthContextProvider";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, NavLink } from "react-router-dom";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { setUser } = useContext(AuthContext);
+  const { setUser, setIsAuthenticated } = useContext(AuthContext);
   const history = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -16,6 +16,8 @@ function Login() {
       const data = await res.data;
       setUser(data.user);
       localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setIsAuthenticated(true);
       api.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${data.accessToken}`;
@@ -35,6 +37,7 @@ function Login() {
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold text-center text-gray-900">Login</h1>
+        <NavLink to="/user">Home</NavLink>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label

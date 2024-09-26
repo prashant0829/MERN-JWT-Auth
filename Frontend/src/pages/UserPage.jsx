@@ -1,13 +1,15 @@
 import { useState, useEffect, useContext } from "react";
 import api from "../utility/api";
 import { AuthContext } from "../components/AuthContextProvider";
+import { useNavigate } from "react-router-dom";
 
 function UserPage() {
-  const { user, setUser, logout } = useContext(AuthContext);
+  const { user, setUser, setIsAuthenticated } = useContext(AuthContext);
   const [username, setUsername] = useState(user ? user.username : "");
   const [password, setPassword] = useState("");
   const [users, setUsers] = useState([]);
-  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState(user?.id);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAllUsers = async () => {
@@ -52,6 +54,18 @@ function UserPage() {
   const handleUserSelect = (user) => {
     setSelectedUserId(user._id);
     setUsername(user.username);
+  };
+
+  const logout = async () => {
+    try {
+      await api.post("/api/auth/logout");
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.clear();
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
